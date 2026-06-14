@@ -63,7 +63,7 @@ class FoodImage extends StatelessWidget {
       height: height,
       color: AppColors.chip,
       alignment: Alignment.center,
-      child: const Icon(Icons.fastfood_rounded,
+      child: Icon(Icons.fastfood_rounded,
           color: AppColors.textMuted, size: 32),
     );
   }

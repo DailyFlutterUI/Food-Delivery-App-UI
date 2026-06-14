@@ -33,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 26),
-          const Text('ACCOUNT', style: AppText.eyebrow),
+          Text('ACCOUNT', style: AppText.eyebrow),
           const SizedBox(height: 12),
           _MenuGroup(items: const [
             (icon: Icons.receipt_long_rounded, label: 'My orders'),
@@ -42,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
             (icon: Icons.credit_card_rounded, label: 'Payment methods'),
           ]),
           const SizedBox(height: 22),
-          const Text('MORE', style: AppText.eyebrow),
+          Text('MORE', style: AppText.eyebrow),
           const SizedBox(height: 12),
           _MenuGroup(items: const [
             (icon: Icons.notifications_none_rounded, label: 'Notifications'),
@@ -201,7 +201,7 @@ class _MenuRow extends StatelessWidget {
               child: Text(item.label,
                   style: AppText.title.copyWith(fontSize: 14)),
             ),
-            const Icon(Icons.chevron_right_rounded,
+            Icon(Icons.chevron_right_rounded,
                 color: AppColors.textMuted, size: 22),
           ],
         ),

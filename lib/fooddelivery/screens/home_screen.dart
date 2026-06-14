@@ -4,7 +4,6 @@ import '../data/foods.dart';
 import '../models/food.dart';
 import '../theme/app_theme.dart';
 import '../widgets/food_cutout.dart';
-import 'detail_screen.dart';
 import 'discover_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const _Header(),
           const SizedBox(height: 26),
-          const Text('What would you like\nto eat today?',
+          Text('What would you like\nto eat today?',
               style: AppText.display),
           const SizedBox(height: 22),
           const _SearchField(),
@@ -65,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             height: 268,
             child: _visibleFoods.isEmpty
-                ? const Center(
+                ? Center(
                     child:
                         Text('No items in this category', style: AppText.body),
                   )
@@ -106,7 +105,9 @@ class _Header extends StatelessWidget {
                 const Icon(Icons.location_on,
                     size: 15, color: AppColors.primary),
                 const SizedBox(width: 4),
-                Text('DELIVER TO', style: AppText.eyebrow),
+                Text('DELIVER TO', style: TextStyle(
+                  color: Colors.white
+                )),
               ],
             ),
             const SizedBox(height: 6),
@@ -115,7 +116,7 @@ class _Header extends StatelessWidget {
                 Text('Sukabumi, Indonesia',
                     style: AppText.title.copyWith(fontSize: 16)),
                 const SizedBox(width: 2),
-                const Icon(Icons.keyboard_arrow_down_rounded,
+                Icon(Icons.keyboard_arrow_down_rounded,
                     size: 20, color: AppColors.textPrimary),
               ],
             ),
@@ -145,7 +146,7 @@ class _NotificationButton extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.hairline),
               ),
-              child: const Icon(Icons.notifications_none_rounded,
+              child: Icon(Icons.notifications_none_rounded,
                   size: 22, color: AppColors.textPrimary),
             ),
             Positioned(
@@ -183,7 +184,7 @@ class _SearchField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.search_rounded,
+          Icon(Icons.search_rounded,
               color: AppColors.textMuted, size: 22),
           const SizedBox(width: 12),
           Expanded(
@@ -220,9 +221,7 @@ class _FeaturedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final food = foodById('deluxe_burger');
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: Container(
         height: 180,
         decoration: BoxDecoration(
@@ -439,9 +438,7 @@ class _PhotoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: Container(
         width: 196,
         decoration: BoxDecoration(
@@ -459,7 +456,7 @@ class _PhotoCard extends StatelessWidget {
                 Container(
                   height: 140,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -509,7 +506,7 @@ class _PhotoCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Positioned(
+                Positioned(
                   top: 10,
                   right: 10,
                   child: _FrostedPill(
@@ -592,9 +589,7 @@ class _ListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

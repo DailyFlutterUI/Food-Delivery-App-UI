@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/main_shell.dart';
 import 'theme/app_theme.dart';
+import 'theme/food_theme.dart';
 
 /// Entry widget for the food-delivery prototype. Launch it from `main.dart`
 /// with `runApp(const FoodApp());`.
@@ -15,11 +16,16 @@ class FoodApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: const MainShell(),
-      // Paint the warm peach→white wash once, behind every (transparent) route.
+      // Paint the warm wash once, behind every (transparent) route, and rebuild
+      // it as the app morphs between Daylight and Midnight.
       builder: (context, child) {
-        return DecoratedBox(
-          decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-          child: child ?? const SizedBox.shrink(),
+        final safeChild = child ?? const SizedBox.shrink();
+        return ListenableBuilder(
+          listenable: FoodTheme.instance,
+          builder: (context, _) => DecoratedBox(
+            decoration: BoxDecoration(gradient: AppColors.backgroundGradient),
+            child: safeChild,
+          ),
         );
       },
     );

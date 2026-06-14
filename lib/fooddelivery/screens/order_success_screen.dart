@@ -87,7 +87,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                 ),
               ),
               const SizedBox(height: 32),
-              const Text('Order confirmed!', style: AppText.display),
+              Text('Order confirmed!', style: AppText.display),
               const SizedBox(height: 12),
               Text(
                 'Your order is on its way. We\'ll notify you\nwhen the driver is nearby.',
@@ -140,12 +140,12 @@ class _ConfettiPainter extends CustomPainter {
 
   final double t;
 
-  static const _colors = [
-    AppColors.primary,
-    AppColors.amber,
-    AppColors.primaryDark,
-    AppColors.pink,
-  ];
+  static List<Color> get _colors => [
+        AppColors.primary,
+        AppColors.amber,
+        AppColors.primaryDark,
+        AppColors.pink,
+      ];
 
   @override
   void paint(Canvas canvas, Size size) {

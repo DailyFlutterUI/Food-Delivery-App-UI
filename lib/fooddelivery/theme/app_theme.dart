@@ -1,63 +1,67 @@
 import 'package:flutter/material.dart';
 
+import 'food_theme.dart';
+
 /// Premium, restrained palette — a warm canvas with a single refined
 /// burnt-orange accent. Neutrals do the heavy lifting; the accent is used
 /// sparingly so it reads as deliberate rather than decorative.
+///
+/// The accent family is constant in both themes. The neutral surfaces and text
+/// tones are *reactive getters* backed by [FoodTheme.instance], so flipping the
+/// app between Daylight and Midnight recolours every existing `AppColors.x`
+/// call site at once.
 class AppColors {
   AppColors._();
 
-  // Single accent.
+  static FoodPalette get _p => FoodTheme.instance.palette;
+
+  // Single accent — constant across both moods.
   static const Color primary = Color(0xFFE94E00);
   static const Color primaryDark = Color(0xFFC23E00);
   static const Color primaryDeep = Color(0xFF8A2B00);
-  static const Color accentSoft = Color(0xFFFDE7DC); // tinted accent surface
+  static const Color amber = Color(0xFFF6A609);
 
-  // Surfaces.
-  static const Color background = Color(0xFFFFFFFF);
-  static const Color card = Colors.white;
-  static const Color surfaceAlt = Color(0xFFF6F1EE); // chips, thumbnails
-  static const Color hairline = Color(0xFFF1E7E1);
+  // Reactive neutral surfaces & accent tint.
+  static Color get accentSoft => _p.accentSoft; // tinted accent surface
+  static Color get background => _p.background;
+  static Color get card => _p.card;
+  static Color get surfaceAlt => _p.surfaceAlt; // chips, thumbnails
+  static Color get hairline => _p.hairline;
 
-  /// Warm peach → white wash painted behind every screen.
-  static const LinearGradient backgroundGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFFCDAC9), Colors.white],
-    stops: [0.0, 0.42],
-  );
+  /// Warm peach → white wash (or ember → ink at night) painted behind screens.
+  static LinearGradient get backgroundGradient => _p.backgroundGradient;
 
   // Legacy alias kept so older references compile.
-  static const Color chip = surfaceAlt;
+  static Color get chip => _p.surfaceAlt;
 
-  // Text — warm near-black down to muted greys.
-  static const Color textPrimary = Color(0xFF17151F);
-  static const Color textSecondary = Color(0xFF8A8794);
-  static const Color textMuted = Color(0xFFBDBAC8);
+  // Text — warm near-black down to muted greys (inverted in Midnight).
+  static Color get textPrimary => _p.textPrimary;
+  static Color get textSecondary => _p.textSecondary;
+  static Color get textMuted => _p.textMuted;
 
   // Sparing supporting tones.
-  static const Color pink = Color(0xFFF6EFF9);
-  static const Color amber = Color(0xFFF6A609);
-  static const Color discountBanner = accentSoft;
+  static Color get pink => _p.pink;
+  static Color get discountBanner => _p.accentSoft;
 }
 
 /// Layered, soft shadows. Premium UIs avoid hard drop shadows in favour of
-/// wide, low-opacity diffusion.
+/// wide, low-opacity diffusion. The base ink tone deepens in Midnight.
 class AppShadows {
   AppShadows._();
 
-  static List<BoxShadow> get card => const [
+  static List<BoxShadow> get card => [
         BoxShadow(
-          color: Color(0x0D14102A), // ~5% ink
+          color: FoodTheme.instance.palette.shadow,
           blurRadius: 24,
-          offset: Offset(0, 12),
+          offset: const Offset(0, 12),
         ),
       ];
 
-  static List<BoxShadow> get floating => const [
+  static List<BoxShadow> get floating => [
         BoxShadow(
-          color: Color(0x1A14102A), // ~10% ink
+          color: FoodTheme.instance.palette.shadow,
           blurRadius: 36,
-          offset: Offset(0, 18),
+          offset: const Offset(0, 18),
         ),
       ];
 
@@ -103,7 +107,7 @@ class AppTheme {
         displayColor: AppColors.textPrimary,
       ),
       splashFactory: InkSparkle.splashFactory,
-      dividerTheme: const DividerThemeData(
+      dividerTheme: DividerThemeData(
         color: AppColors.hairline,
         thickness: 1,
         space: 1,
@@ -117,71 +121,74 @@ class AppTheme {
 class AppText {
   AppText._();
 
-  static const TextStyle display = TextStyle(
-    fontFamily: AppTheme.displayFont,
-    fontSize: 28,
-    fontWeight: FontWeight.w800,
-    letterSpacing: -1.0,
-    height: 1.15,
-    color: AppColors.textPrimary,
-  );
+  // Reactive getters: the text colour follows the active palette, so the same
+  // styles read correctly in both Daylight and Midnight. (`button` is white in
+  // both moods, sitting on the accent.)
+  static TextStyle get display => TextStyle(
+        fontFamily: AppTheme.displayFont,
+        fontSize: 28,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -1.0,
+        height: 1.15,
+        color: AppColors.textPrimary,
+      );
 
-  static const TextStyle h1 = TextStyle(
-    fontFamily: AppTheme.displayFont,
-    fontSize: 23,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.6,
-    height: 1.2,
-    color: AppColors.textPrimary,
-  );
+  static TextStyle get h1 => TextStyle(
+        fontFamily: AppTheme.displayFont,
+        fontSize: 23,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.6,
+        height: 1.2,
+        color: AppColors.textPrimary,
+      );
 
-  static const TextStyle h2 = TextStyle(
-    fontFamily: AppTheme.displayFont,
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.3,
-    color: AppColors.textPrimary,
-  );
+  static TextStyle get h2 => TextStyle(
+        fontFamily: AppTheme.displayFont,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.3,
+        color: AppColors.textPrimary,
+      );
 
-  static const TextStyle title = TextStyle(
-    fontFamily: AppTheme.displayFont,
-    fontSize: 15.5,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.2,
-    color: AppColors.textPrimary,
-  );
+  static TextStyle get title => TextStyle(
+        fontFamily: AppTheme.displayFont,
+        fontSize: 15.5,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.2,
+        color: AppColors.textPrimary,
+      );
 
   /// Small, all-caps section eyebrow.
-  static const TextStyle eyebrow = TextStyle(
-    fontFamily: AppTheme.bodyFont,
-    fontSize: 11,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 1.4,
-    color: AppColors.textMuted,
-  );
+  static TextStyle get eyebrow => TextStyle(
+        fontFamily: AppTheme.bodyFont,
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.4,
+        color: AppColors.textMuted,
+      );
 
-  static const TextStyle body = TextStyle(
-    fontFamily: AppTheme.bodyFont,
-    fontSize: 13.5,
-    fontWeight: FontWeight.w400,
-    height: 1.55,
-    color: AppColors.textSecondary,
-  );
+  static TextStyle get body => TextStyle(
+        fontFamily: AppTheme.bodyFont,
+        fontSize: 13.5,
+        fontWeight: FontWeight.w400,
+        height: 1.55,
+        color: AppColors.textSecondary,
+      );
 
-  static const TextStyle label = TextStyle(
-    fontFamily: AppTheme.bodyFont,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-  );
+  static TextStyle get label => TextStyle(
+        fontFamily: AppTheme.bodyFont,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+      );
 
-  static const TextStyle price = TextStyle(
-    fontFamily: AppTheme.displayFont,
-    fontSize: 18,
-    fontWeight: FontWeight.w800,
-    letterSpacing: -0.5,
-    color: AppColors.textPrimary,
-  );
+  static TextStyle get price => TextStyle(
+        fontFamily: AppTheme.displayFont,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -0.5,
+        color: AppColors.textPrimary,
+      );
 
   static const TextStyle button = TextStyle(
     fontFamily: AppTheme.displayFont,
