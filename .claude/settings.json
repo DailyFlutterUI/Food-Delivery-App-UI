@@ -29,7 +29,11 @@
       "Bash(rm -f /tmp/s_unlock_*.png; flutter test test/render_screens.dart --plain-name 'face unlock' >/tmp/fu2.log 2>&1; echo \"exit=$?\"; grep -aoE \"All tests passed|Some tests failed\" /tmp/fu2.log; grep -aoE \"[A-Za-z' +]+\\\\[E\\\\]\" /tmp/fu2.log | sort -u; ls /tmp/s_unlock_*.png 2>&1)",
       "Bash(rm -f /tmp/s_unlock_*.png; flutter test test/render_screens.dart --plain-name 'face unlock' >/tmp/fu3.log 2>&1; echo \"exit=$?\"; grep -aoE \"All tests passed|Some tests failed\" /tmp/fu3.log; grep -aoE \"[A-Za-z' +]+\\\\[E\\\\]\" /tmp/fu3.log | sort -u; ls /tmp/s_unlock_*.png 2>&1)",
       "Bash(awk '/^  flutter_map:/{f=1} f&&/version:/{print \"flutter_map \"$2; f=0}' pubspec.lock)",
-      "Bash(awk '/^  latlong2:/{f=1} f&&/version:/{print \"latlong2 \"$2; f=0}' pubspec.lock)"
+      "Bash(awk '/^  latlong2:/{f=1} f&&/version:/{print \"latlong2 \"$2; f=0}' pubspec.lock)",
+      "Bash(grep -nA30 \"flutter:\" pubspec.yaml)",
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(grep -v ':0$')",
+      "Bash(awk 'NR>1316' /tmp/probe_run.log)"
     ],
     "additionalDirectories": [
       "/tmp"

@@ -46,7 +46,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 children: [
                   _BackButton(onTap: () => Navigator.of(context).maybePop()),
                   const SizedBox(width: 16),
-                  const Text('Checkout', style: AppText.h1),
+                  Text('Checkout', style: AppText.h1),
                 ],
               ),
             ),
@@ -54,11 +54,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(24, 22, 24, 28),
                 children: [
-                  const Text('DELIVER TO', style: AppText.eyebrow),
+                  Text('DELIVER TO', style: AppText.eyebrow),
                   const SizedBox(height: 12),
                   _AddressCard(),
                   const SizedBox(height: 26),
-                  const Text('DELIVERY OPTION', style: AppText.eyebrow),
+                  Text('DELIVERY OPTION', style: AppText.eyebrow),
                   const SizedBox(height: 12),
                   _OptionTile(
                     icon: Icons.electric_bolt_rounded,
@@ -76,7 +76,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     onTap: () => setState(() => _delivery = 1),
                   ),
                   const SizedBox(height: 26),
-                  const Text('PAYMENT METHOD', style: AppText.eyebrow),
+                  Text('PAYMENT METHOD', style: AppText.eyebrow),
                   const SizedBox(height: 12),
                   for (var i = 0; i < _payments.length; i++) ...[
                     _OptionTile(
@@ -120,7 +120,7 @@ class _AddressCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(11),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.accentSoft,
               shape: BoxShape.circle,
             ),
@@ -298,7 +298,7 @@ class _BackButton extends StatelessWidget {
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.hairline),
           ),
-          child: const Icon(Icons.arrow_back_ios_new_rounded,
+          child: Icon(Icons.arrow_back_ios_new_rounded,
               size: 18, color: AppColors.textPrimary),
         ),
       ),

@@ -7,7 +7,6 @@ import '../models/food.dart';
 import '../theme/app_theme.dart';
 import '../widgets/food_cutout.dart';
 import '../widgets/info_pill.dart';
-import 'detail_screen.dart';
 
 /// "Nearby" tab — a live map with dish pins and a swipeable card strip. Tapping
 /// a card recentres the map on that dish's restaurant.
@@ -97,7 +96,7 @@ class _MapScreenState extends State<MapScreen> {
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
             child: Row(
               children: [
-                const _GlassChip(
+                _GlassChip(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -171,9 +170,7 @@ class _NearbyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

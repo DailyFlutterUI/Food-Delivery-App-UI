@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../state/cart.dart';
 import '../theme/app_theme.dart';
+import '../theme/food_theme.dart';
 import 'cart_screen.dart';
 import 'home_screen.dart';
 import 'map_screen.dart';
-import 'profile_screen.dart';
+import 'settings_transform_screen.dart';
 
 /// Root scaffold holding the four primary tabs behind a custom bottom bar.
 class MainShell extends StatefulWidget {
@@ -18,21 +19,31 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
 
-  static const _pages = [
-    HomeScreen(),
-    MapScreen(),
-    CartScreen(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _index, children: _pages),
-      bottomNavigationBar: _BottomBar(
-        index: _index,
-        onTap: (i) => setState(() => _index = i),
-      ),
+    // Rebuild the whole shell — every tab and the nav bar — as the app morphs
+    // between Daylight and Midnight.
+    return ListenableBuilder(
+      listenable: FoodTheme.instance,
+      builder: (context, _) {
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: IndexedStack(
+            index: _index,
+            children: [
+              const HomeScreen(),
+              const MapScreen(),
+              const CartScreen(),
+              // Profile tab — replays its entrance each time it becomes active.
+              SettingsTransformScreen(active: _index == 3),
+            ],
+          ),
+          bottomNavigationBar: _BottomBar(
+            index: _index,
+            onTap: (i) => setState(() => _index = i),
+          ),
+        );
+      },
     );
   }
 }
@@ -52,15 +63,20 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.hairline)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+    // Floating pill bar that lifts off the canvas — reads cleanly on both the
+    // peach daylight wash and the midnight ink.
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: AppColors.hairline),
+            boxShadow: AppShadows.floating,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

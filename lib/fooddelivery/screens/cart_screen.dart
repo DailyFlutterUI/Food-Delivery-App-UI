@@ -257,20 +257,20 @@ class _EmptyCart extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.surfaceAlt,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.shopping_bag_outlined,
               size: 48,
               color: AppColors.textMuted,
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Your cart is empty', style: AppText.h2),
+          Text('Your cart is empty', style: AppText.h2),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Add something delicious to get started',
             style: AppText.body,
           ),

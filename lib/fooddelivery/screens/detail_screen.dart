@@ -26,49 +26,41 @@ class _DetailScreenState extends State<DetailScreen> {
     final food = widget.food;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              _HeroAppBar(
-                food: food,
-                favourite: _favourite,
-                onFavourite: () => setState(() => _favourite = !_favourite),
-              ),
-              SliverToBoxAdapter(
-                child: Transform.translate(
-                  offset: const Offset(0, -10),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(40), // increase this value
-                      ),
-                    ),
-                    padding: const EdgeInsets.fromLTRB(24, 26, 24, 140),
-                    child: _Body(
-                      food: food,
-                      sizeIndex: _sizeIndex,
-                      onSize: (i) {
-                        setState(() => _sizeIndex = i);
-                      },
-                    ),
+      body: CustomScrollView(
+        slivers: [
+          _HeroAppBar(
+            food: food,
+            favourite: _favourite,
+            onFavourite: () => setState(() => _favourite = !_favourite),
+          ),
+          SliverToBoxAdapter(
+            child: Transform.translate(
+              offset: const Offset(0, -24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(34),
                   ),
                 ),
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+                child: _Body(
+                  food: food,
+                  sizeIndex: _sizeIndex,
+                  onSize: (i) => setState(() => _sizeIndex = i),
+                ),
               ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _BottomBar(
-              food: food,
-              quantity: _quantity,
-              onIncrement: () => setState(() => _quantity++),
-              onDecrement: () =>
-                  setState(() => _quantity = _quantity > 1 ? _quantity - 1 : 1),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: _BottomBar(
+        food: food,
+        quantity: _quantity,
+        size: food.sizes.isNotEmpty ? food.sizes[_sizeIndex] : null,
+        onIncrement: () => setState(() => _quantity++),
+        onDecrement: () =>
+            setState(() => _quantity = _quantity > 1 ? _quantity - 1 : 1),
       ),
     );
   }
@@ -119,7 +111,7 @@ class _HeroAppBar extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            const DecoratedBox(
+            DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -264,7 +256,7 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 26),
         // Size selector
         if (food.sizes.isNotEmpty) ...[
-          const Text('CHOOSE SIZE', style: AppText.eyebrow),
+          Text('CHOOSE SIZE', style: AppText.eyebrow),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -282,7 +274,7 @@ class _Body extends StatelessWidget {
         ],
         // Ingredients
         if (food.ingredients.isNotEmpty) ...[
-          const Text('INGREDIENTS', style: AppText.eyebrow),
+          Text('INGREDIENTS', style: AppText.eyebrow),
           const SizedBox(height: 12),
           SizedBox(
             height: 80,
@@ -297,12 +289,12 @@ class _Body extends StatelessWidget {
           const SizedBox(height: 26),
         ],
         // Description
-        const Text('DESCRIPTION', style: AppText.eyebrow),
+        Text('DESCRIPTION', style: AppText.eyebrow),
         const SizedBox(height: 10),
         Text(food.description, style: AppText.body),
         const SizedBox(height: 26),
         // Nutrition
-        const Text('NUTRITION', style: AppText.eyebrow),
+        Text('NUTRITION', style: AppText.eyebrow),
         const SizedBox(height: 12),
         _NutritionRow(calories: food.calories),
         const SizedBox(height: 26),
@@ -310,7 +302,7 @@ class _Body extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('REVIEWS', style: AppText.eyebrow),
+            Text('REVIEWS', style: AppText.eyebrow),
             Text(
               'See all ${food.reviewCount}',
               style: AppText.label.copyWith(
@@ -610,7 +602,7 @@ class _ReviewCard extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.surfaceAlt,
                   shape: BoxShape.circle,
                 ),
@@ -675,12 +667,12 @@ class _GlassButton extends StatelessWidget {
   const _GlassButton({
     required this.icon,
     required this.onTap,
-    this.iconColor = AppColors.textPrimary,
+    this.iconColor,
   });
 
   final IconData icon;
   final VoidCallback onTap;
-  final Color iconColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -694,7 +686,7 @@ class _GlassButton extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Icon(icon, size: 18, color: iconColor),
+          child: Icon(icon, size: 18, color: iconColor ?? AppColors.textPrimary),
         ),
       ),
     );
@@ -705,12 +697,14 @@ class _BottomBar extends StatelessWidget {
   const _BottomBar({
     required this.food,
     required this.quantity,
+    required this.size,
     required this.onIncrement,
     required this.onDecrement,
   });
 
   final Food food;
   final int quantity;
+  final String? size;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
 
@@ -718,7 +712,7 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = food.price * quantity;
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(
@@ -748,8 +742,11 @@ class _BottomBar extends StatelessWidget {
                       SnackBar(
                         behavior: SnackBarBehavior.floating,
                         backgroundColor: AppColors.textPrimary,
+                        duration: const Duration(seconds: 2),
                         content: Text(
-                          '${food.name} added to cart',
+                          size == null
+                              ? '$quantity× ${food.name} added to cart'
+                              : '$quantity× ${food.name} ($size) added to cart',
                           style: const TextStyle(fontFamily: AppTheme.bodyFont),
                         ),
                       ),

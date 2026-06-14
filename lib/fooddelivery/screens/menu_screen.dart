@@ -6,7 +6,6 @@ import '../state/cart.dart';
 import '../theme/app_theme.dart';
 import '../widgets/food_cutout.dart';
 import '../widgets/quantity_stepper.dart';
-import 'detail_screen.dart';
 
 /// Scrollable list of menu items, each with a quantity stepper bound to the
 /// shared [Cart].
@@ -30,7 +29,7 @@ class MenuScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Our Menu', style: AppText.h2),
+                      Text('Our Menu', style: AppText.h2),
                       Text('${kFoods.length} dishes available',
                           style: AppText.label),
                     ],
@@ -71,9 +70,7 @@ class _MenuTile extends StatelessWidget {
     final selected = qty > 0;
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -159,7 +156,7 @@ class _BackButton extends StatelessWidget {
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.hairline),
           ),
-          child: const Icon(Icons.arrow_back_ios_new_rounded,
+          child: Icon(Icons.arrow_back_ios_new_rounded,
               size: 18, color: AppColors.textPrimary),
         ),
       ),

@@ -8,7 +8,6 @@ import '../models/food.dart';
 import '../state/cart.dart';
 import '../theme/app_theme.dart';
 import '../widgets/food_image.dart';
-import 'detail_screen.dart';
 
 /// An immersive, motion-rich way to browse dishes, built around transparent
 /// food cutouts that actually *float*.
@@ -278,7 +277,7 @@ class _CardSurface extends StatelessWidget {
     Widget surface = Container(
       height: cardHeight,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [Colors.white, AppColors.surfaceAlt],
@@ -422,9 +421,7 @@ class _CardSurface extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
-      ),
+      onTap: null,
       child: surface,
     );
   }
@@ -767,7 +764,7 @@ class _Header extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.hairline),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new_rounded,
+                child: Icon(Icons.arrow_back_ios_new_rounded,
                     size: 18, color: AppColors.textPrimary),
               ),
             ),
@@ -776,7 +773,7 @@ class _Header extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Discover', style: AppText.h1),
+              Text('Discover', style: AppText.h1),
               Text('$count dishes · swipe through', style: AppText.label),
             ],
           ),
