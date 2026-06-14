@@ -33,7 +33,9 @@
       "Bash(grep -nA30 \"flutter:\" pubspec.yaml)",
       "Bash(sort -t: -k2 -rn)",
       "Bash(grep -v ':0$')",
-      "Bash(awk 'NR>1316' /tmp/probe_run.log)"
+      "Bash(awk 'NR>1316' /tmp/probe_run.log)",
+      "Bash(echo \"clean exit=$?\")",
+      "Bash(echo \"shot: $?\")"
     ],
     "additionalDirectories": [
       "/tmp"
