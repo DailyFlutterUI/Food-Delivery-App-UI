@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/main_shell.dart';
+import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
 import 'theme/food_theme.dart';
 
@@ -15,7 +15,7 @@ class FoodApp extends StatelessWidget {
       title: 'Food Delivery',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const MainShell(),
+      home: const LoginScreen(),
       // Paint the warm wash once, behind every (transparent) route, and rebuild
       // it as the app morphs between Daylight and Midnight.
       builder: (context, child) {

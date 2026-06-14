@@ -10,18 +10,22 @@ class PrimaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.showShadow = true,
   });
 
   final String label;
   final VoidCallback onPressed;
   final IconData? icon;
 
+  /// Soft accent glow beneath the button. Off for the flat auth CTAs.
+  final bool showShadow;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        boxShadow: AppShadows.accent(AppColors.primary),
+        boxShadow: showShadow ? AppShadows.accent(AppColors.primary) : null,
       ),
       child: Material(
         color: AppColors.primary,
