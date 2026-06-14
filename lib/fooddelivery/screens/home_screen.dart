@@ -4,7 +4,15 @@ import '../data/foods.dart';
 import '../models/food.dart';
 import '../theme/app_theme.dart';
 import '../widgets/food_cutout.dart';
+import 'detail_screen.dart';
 import 'discover_screen.dart';
+
+/// Pushes the food detail screen — shared by every card on the home feed.
+void _openDetail(BuildContext context, Food food) {
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (_) => DetailScreen(food: food)),
+  );
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -106,7 +114,7 @@ class _Header extends StatelessWidget {
                     size: 15, color: AppColors.primary),
                 const SizedBox(width: 4),
                 Text('DELIVER TO', style: TextStyle(
-                  color: Colors.white
+                  color: Colors.black87
                 )),
               ],
             ),
@@ -221,7 +229,7 @@ class _FeaturedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final food = foodById('deluxe_burger');
     return GestureDetector(
-      onTap: null,
+      onTap: () => _openDetail(context, food),
       child: Container(
         height: 180,
         decoration: BoxDecoration(
@@ -438,7 +446,7 @@ class _PhotoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: null,
+      onTap: () => _openDetail(context, food),
       child: Container(
         width: 196,
         decoration: BoxDecoration(
@@ -589,7 +597,7 @@ class _ListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: null,
+      onTap: () => _openDetail(context, food),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

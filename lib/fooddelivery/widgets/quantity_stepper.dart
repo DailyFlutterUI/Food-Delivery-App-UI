@@ -32,12 +32,16 @@ class QuantityStepper extends StatelessWidget {
             duration: const Duration(milliseconds: 180),
             transitionBuilder: (child, anim) =>
                 ScaleTransition(scale: anim, child: child),
-            child: Container(
+            // ConstrainedBox + textAlign keeps the number horizontally centred
+            // within a stable min-width without an `alignment:`, which would make
+            // the box greedily fill the parent's height (e.g. the full-screen
+            // maxHeight of a Scaffold.bottomNavigationBar slot).
+            child: ConstrainedBox(
               key: ValueKey(quantity),
               constraints: const BoxConstraints(minWidth: 28),
-              alignment: Alignment.center,
               child: Text(
                 '$quantity',
+                textAlign: TextAlign.center,
                 style: AppText.title.copyWith(fontSize: 15),
               ),
             ),

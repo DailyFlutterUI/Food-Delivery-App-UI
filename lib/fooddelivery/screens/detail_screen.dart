@@ -1,4 +1,7 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/food.dart';
 import '../state/cart.dart';
@@ -16,10 +19,75 @@ class DetailScreen extends StatefulWidget {
   State<DetailScreen> createState() => _DetailScreenState();
 }
 
-class _DetailScreenState extends State<DetailScreen> {
+class _DetailScreenState extends State<DetailScreen>
+    with TickerProviderStateMixin {
   int _quantity = 1;
   int _sizeIndex = 0;
   bool _favourite = false;
+
+  // Source (the hero dish) and target (the app-bar cart) for the flight.
+  final GlobalKey _cutoutKey = GlobalKey();
+  final GlobalKey _cartKey = GlobalKey();
+
+  // Drives the little "pop" of the cart badge when a dish lands in it.
+  late final AnimationController _badgeBump = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 460),
+  );
+
+  @override
+  void dispose() {
+    _badgeBump.dispose();
+    super.dispose();
+  }
+
+  /// Tapping "Add" launches a copy of the dish that arcs up into the cart icon,
+  /// then commits the item so the badge ticks up exactly as it lands.
+  void _addToCart() {
+    final cutoutBox =
+        _cutoutKey.currentContext?.findRenderObject() as RenderBox?;
+    final cartBox = _cartKey.currentContext?.findRenderObject() as RenderBox?;
+    final overlay = Overlay.of(context);
+
+    // If the hero has scrolled out of view we can't measure it — just commit.
+    if (cutoutBox == null || cartBox == null || !cutoutBox.hasSize) {
+      _commitToCart();
+      return;
+    }
+
+    final start = cutoutBox.localToGlobal(cutoutBox.size.center(Offset.zero));
+    final end = cartBox.localToGlobal(cartBox.size.center(Offset.zero));
+
+    final flight = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 720),
+    );
+
+    late final OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => _FlyingDish(
+        food: widget.food,
+        animation: flight,
+        start: start,
+        end: end,
+      ),
+    );
+
+    overlay.insert(entry);
+    HapticFeedback.selectionClick();
+
+    flight.forward().whenComplete(() {
+      entry.remove();
+      flight.dispose();
+      _commitToCart();
+    });
+  }
+
+  void _commitToCart() {
+    Cart.instance.add(widget.food, quantity: _quantity);
+    _badgeBump.forward(from: 0);
+    HapticFeedback.lightImpact();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +98,12 @@ class _DetailScreenState extends State<DetailScreen> {
         slivers: [
           _HeroAppBar(
             food: food,
+            cutoutKey: _cutoutKey,
+            cartKey: _cartKey,
+            badgeBump: _badgeBump,
             favourite: _favourite,
             onFavourite: () => setState(() => _favourite = !_favourite),
+            onCart: () => Navigator.of(context).maybePop(),
           ),
           SliverToBoxAdapter(
             child: Transform.translate(
@@ -57,10 +129,10 @@ class _DetailScreenState extends State<DetailScreen> {
       bottomNavigationBar: _BottomBar(
         food: food,
         quantity: _quantity,
-        size: food.sizes.isNotEmpty ? food.sizes[_sizeIndex] : null,
         onIncrement: () => setState(() => _quantity++),
         onDecrement: () =>
             setState(() => _quantity = _quantity > 1 ? _quantity - 1 : 1),
+        onAdd: _addToCart,
       ),
     );
   }
@@ -69,13 +141,21 @@ class _DetailScreenState extends State<DetailScreen> {
 class _HeroAppBar extends StatelessWidget {
   const _HeroAppBar({
     required this.food,
+    required this.cutoutKey,
+    required this.cartKey,
+    required this.badgeBump,
     required this.favourite,
     required this.onFavourite,
+    required this.onCart,
   });
 
   final Food food;
+  final GlobalKey cutoutKey;
+  final GlobalKey cartKey;
+  final Animation<double> badgeBump;
   final bool favourite;
   final VoidCallback onFavourite;
+  final VoidCallback onCart;
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +175,20 @@ class _HeroAppBar extends StatelessWidget {
         ),
       ),
       actions: [
+        _GlassButton(
+          icon: favourite
+              ? Icons.favorite_rounded
+              : Icons.favorite_border_rounded,
+          iconColor: favourite ? AppColors.primary : AppColors.textPrimary,
+          onTap: onFavourite,
+        ),
+        const SizedBox(width: 12),
         Padding(
           padding: const EdgeInsets.only(right: 20),
-          child: _GlassButton(
-            icon: favourite
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
-            iconColor: favourite ? AppColors.primary : AppColors.textPrimary,
-            onTap: onFavourite,
+          child: _CartButton(
+            targetKey: cartKey,
+            bump: badgeBump,
+            onTap: onCart,
           ),
         ),
       ],
@@ -140,7 +226,7 @@ class _HeroAppBar extends StatelessWidget {
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 24),
-                child: FoodCutout(food: food, size: 240),
+                child: FoodCutout(key: cutoutKey, food: food, size: 240),
               ),
             ),
             if (food.isPopular)
@@ -697,16 +783,16 @@ class _BottomBar extends StatelessWidget {
   const _BottomBar({
     required this.food,
     required this.quantity,
-    required this.size,
     required this.onIncrement,
     required this.onDecrement,
+    required this.onAdd,
   });
 
   final Food food;
   final int quantity;
-  final String? size;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
+  final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -734,30 +820,157 @@ class _BottomBar extends StatelessWidget {
               child: PrimaryButton(
                 label: 'Add  ·  \$${total.toStringAsFixed(2)}',
                 icon: Icons.shopping_bag_outlined,
-                onPressed: () {
-                  Cart.instance.add(food, quantity: quantity);
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: AppColors.textPrimary,
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          size == null
-                              ? '$quantity× ${food.name} added to cart'
-                              : '$quantity× ${food.name} ($size) added to cart',
-                          style: const TextStyle(fontFamily: AppTheme.bodyFont),
-                        ),
-                      ),
-                    );
-                  Navigator.of(context).maybePop();
-                },
+                onPressed: onAdd,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// App-bar cart button that doubles as the flight's landing target. The icon
+/// "pops" via [bump] each time a dish lands, and carries a live count badge.
+class _CartButton extends StatelessWidget {
+  const _CartButton({
+    required this.targetKey,
+    required this.bump,
+    required this.onTap,
+  });
+
+  final GlobalKey targetKey;
+  final Animation<double> bump;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 1.38)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 42,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.38, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 58,
+      ),
+    ]).animate(bump);
+
+    return ScaleTransition(
+      scale: scale,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Material(
+            color: Colors.white,
+            shape: const CircleBorder(),
+            elevation: 2,
+            shadowColor: Colors.black26,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: Padding(
+                key: targetKey,
+                padding: const EdgeInsets.all(10),
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 18,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: -4,
+            top: -4,
+            child: ListenableBuilder(
+              listenable: Cart.instance,
+              builder: (context, _) {
+                final count = Cart.instance.count;
+                if (count == 0) return const SizedBox.shrink();
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  constraints: const BoxConstraints(minWidth: 18),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  child: Text(
+                    '$count',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: AppTheme.bodyFont,
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A copy of the dish that arcs from the hero image into the cart icon along a
+/// quadratic bézier, shrinking and fading as it "drops in".
+class _FlyingDish extends StatelessWidget {
+  const _FlyingDish({
+    required this.food,
+    required this.animation,
+    required this.start,
+    required this.end,
+  });
+
+  final Food food;
+  final Animation<double> animation;
+  final Offset start;
+  final Offset end;
+
+  static const double _startSize = 130;
+  static const double _endSize = 30;
+
+  static Offset _bezier(Offset p0, Offset c, Offset p1, double t) {
+    final u = 1 - t;
+    return Offset(
+      u * u * p0.dx + 2 * u * t * c.dx + t * t * p1.dx,
+      u * u * p0.dy + 2 * u * t * c.dy + t * t * p1.dy,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeInOutCubic,
+    );
+    // Arc out toward the cart's column first, then sweep up into it.
+    final control = Offset(end.dx, start.dy);
+
+    return AnimatedBuilder(
+      animation: curved,
+      builder: (context, child) {
+        final t = curved.value;
+        final pos = _bezier(start, control, end, t);
+        final size =
+            lerpDouble(_startSize, _endSize, Curves.easeIn.transform(t))!;
+        final opacity = t < 0.85 ? 1.0 : (1.0 - (t - 0.85) / 0.15);
+        return Positioned(
+          left: pos.dx - size / 2,
+          top: pos.dy - size / 2,
+          width: size,
+          height: size,
+          child: Opacity(opacity: opacity.clamp(0.0, 1.0), child: child),
+        );
+      },
+      child: IgnorePointer(child: FoodCutout(food: food)),
     );
   }
 }
