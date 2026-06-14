@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"exit $?\")",
+      "Bash(python3 -c ' *)",
+      "Bash(rm -rf lib/world_time)",
+      "Bash(mkdir -p lib/neobank/screens lib/neobank/widgets)",
+      "Bash(flutter devices *)",
+      "Bash(rm -f /tmp/s_*.png && flutter test test/render_screens.dart 2>&1 | tail -15 && echo \"---\" && ls -la /tmp/s_*.png)",
+      "Bash(break)",
+      "Bash(pkill -f \"render_screens\")",
+      "Bash(pkill -f \"flutter_tools.*test\")",
+      "Bash(rm -f /tmp/s_*.png; flutter test test/render_screens.dart 2>&1 | tail -8; echo \"=== PNGS ===\"; ls -la /tmp/s_*.png)",
+      "Bash(pkill -9 -f \"render_screens\")",
+      "Bash(pkill -9 -f \"flutter_tools.*test\")",
+      "Bash(pkill -9 -f \"\\\\.dart_tool/.*test\")",
+      "Bash(rm -f /tmp/s_*.png)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(rm -f /tmp/s_*.png; flutter test test/render_screens.dart >/tmp/render.log 2>&1; echo \"exit=$?\"; tail -4 /tmp/render.log; echo \"===\"; ls -la /tmp/s_*.png 2>&1)",
+      "Bash(grep -iA 18 \"exception\\\\|error\\\\|failed\\\\|Which\\\\|Found\")",
+      "Bash(grep -iB1 -A10 \"TestFailure\\\\|pumpAndSettle timed out\\\\|Expected:\\\\|Which:\" /private/tmp/claude-501/-Users-kaizhe-Desktop-flutter-project-mini-app/7cc47e19-d179-41e7-84fd-d9b61636eddc/tasks/bltx83clt.output)",
+      "Bash(grep -iA12 \"exception\\\\|failure\\\\|timed\\\\|expected\")",
+      "Bash(grep -iA6 \"Eye toggle\\\\|Found [0-9]\\\\|Expected:\\\\|Actual:\\\\|Which:\")",
+      "Bash(echo \"widget_exit=$?\")",
+      "Bash(echo \"render_exit=$?\")",
+      "Bash(echo \"widget=$?\")",
+      "Bash(grep -iA6 \"Found [0-9]|Expected:|Actual:|Which:|warning|too many\")",
+      "Bash(flutter analyze *)",
+      "Bash(rm -f /tmp/s_unlock_*.png; flutter test test/render_screens.dart --plain-name 'face unlock' >/tmp/fu2.log 2>&1; echo \"exit=$?\"; grep -aoE \"All tests passed|Some tests failed\" /tmp/fu2.log; grep -aoE \"[A-Za-z' +]+\\\\[E\\\\]\" /tmp/fu2.log | sort -u; ls /tmp/s_unlock_*.png 2>&1)",
+      "Bash(rm -f /tmp/s_unlock_*.png; flutter test test/render_screens.dart --plain-name 'face unlock' >/tmp/fu3.log 2>&1; echo \"exit=$?\"; grep -aoE \"All tests passed|Some tests failed\" /tmp/fu3.log; grep -aoE \"[A-Za-z' +]+\\\\[E\\\\]\" /tmp/fu3.log | sort -u; ls /tmp/s_unlock_*.png 2>&1)",
+      "Bash(awk '/^  flutter_map:/{f=1} f&&/version:/{print \"flutter_map \"$2; f=0}' pubspec.lock)",
+      "Bash(awk '/^  latlong2:/{f=1} f&&/version:/{print \"latlong2 \"$2; f=0}' pubspec.lock)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}
